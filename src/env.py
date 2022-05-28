@@ -16,7 +16,7 @@ class TakeTheLEnv(Env):
         self.state = Board(difficulty)
         self.difficulty = difficulty
         self.pos = self.state.start
-        self.action_space = spaces.Discrete(self.state.size)
+        self.action_space = spaces.Discrete(4)
         self.observation_space = spaces.Discrete(self.state.size**2)
 
     def step(self, action: int) -> Tuple[Board, float, bool, dict]:
