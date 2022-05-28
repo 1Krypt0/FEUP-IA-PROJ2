@@ -1,6 +1,11 @@
-from gym import Env
+from gym import Env, spaces
 from typing import Tuple
 from board import Board, is_complete
+
+LEFT = 0
+DOWN = 1
+RIGHT = 2
+UP = 3
 
 
 class TakeTheLEnv(Env):
@@ -11,19 +16,14 @@ class TakeTheLEnv(Env):
         self.state = Board(difficulty)
         self.difficulty = difficulty
         self.pos = self.state.start
+        self.action_space = spaces.Discrete(self.state.size)
+        self.observation_space = spaces.Discrete(self.state.size**2)
 
     def step(self, action: int) -> Tuple[Board, float, bool, dict]:
         movement: Tuple[int, int] = self.state.ACTIONS[action]
         reward, info = self.perform_step(movement)
         done = is_complete(self.pos, self.state.goal)
         return self.state, reward, done, info
-
-    # NOTE: When info should be added, it should be in this method
-    def perform_step(self, step: Tuple[int, int]) -> Tuple[float, dict]:
-        new_pos = (self.pos[0] + step[0], self.pos[1] + step[1])
-        self.state.visit(new_pos)
-        reward: float = self.state.evaluate_board_state()
-        return reward, {}
 
     def reset(self):
         self.state.reset()
@@ -32,5 +32,11 @@ class TakeTheLEnv(Env):
     def render(self, mode="human"):
         print(self.state)
 
-    # action_space: spaces.Space[ActType] =
-    # observation_space: spaces.Space[ObsType] = {}
+    # NOTE: When info should be added, it should be in this method
+    def perform_step(self, step: Tuple[int, int]) -> Tuple[float, dict]:
+        new_pos = (self.pos[0] + step[0], self.pos[1] + step[1])
+        self.state.visit(new_pos)
+        reward: float = self.state.evaluate_board_state()
+        return reward, {}
+
+    # NOTE: May be necessary in the future, not sure for now
