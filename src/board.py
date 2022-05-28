@@ -1,3 +1,4 @@
+from typing import List, Tuple
 from board_lists import *
 import random
 
@@ -35,6 +36,13 @@ class Board:
     unvisit
     """
 
+    ACTIONS = [
+        (1, 0),  # DOWN
+        (0, 1),  # RIGHT
+        (-1, 0),  # UP
+        (0, -1),  # LEFT
+    ]
+
     def __init__(self, difficulty: int) -> None:
         self.board = choose_random_board(difficulty)
         size = len(self.board)
@@ -59,6 +67,13 @@ class Board:
         if shape != 0:
             self.visited_shapes.discard(shape)
         self.visited[pos[0]][pos[1]] = 0
+
+    # TODO
+    def evaluate_board_state(self) -> float:
+        return 0.0
+
+    def get_available_actions(self) -> List[Tuple[int, int]]:
+        return [(0, 0)]
 
     def __repr__(self) -> str:
         print(self.size)
