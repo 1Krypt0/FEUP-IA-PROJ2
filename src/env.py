@@ -5,22 +5,30 @@ from board import Board, is_complete
 
 class TakeTheLEnv(Env):
 
-    metadata = {"render_modes": ["human", "rgb_array"], "rendder_fps": 50}
+    metadata = {"render_modes": ["human", "rgb_array"], "render_fps": 50}
 
     def __init__(self, difficulty: int) -> None:
         self.state = Board(difficulty)
         self.difficulty = difficulty
         self.pos = self.state.start
 
-    # TODO: Complete this definition with actions
-    def step(self, action) -> Tuple[Board, float, bool, dict]:
+    def step(self, action: int) -> Tuple[Board, float, bool, dict]:
+        movement: Tuple[int, int] = self.state.ACTIONS[action]
+        reward, info = self.perform_step(movement)
         done = is_complete(self.pos, self.state.goal)
-        return Board(0), 0.0, done, {}
+        return self.state, reward, done, info
+
+    # NOTE: When info should be added, it should be in this method
+    def perform_step(self, step: Tuple[int, int]) -> Tuple[float, dict]:
+        new_pos = (self.pos[0] + step[0], self.pos[1] + step[1])
+        self.state.visit(new_pos)
+        reward: float = self.state.evaluate_board_state()
+        return reward, {}
 
     def reset(self):
         self.state.reset()
 
-    # HACK: For mow it is using print. Later change to pygame
+    # NOTE: For mow it is using print. Later change to pygame
     def render(self, mode="human"):
         print(self.state)
 
