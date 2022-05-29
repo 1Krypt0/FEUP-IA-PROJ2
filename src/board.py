@@ -2,6 +2,8 @@ from typing import List, Tuple
 from board_lists import *
 import random
 
+from utils import manhattan_distance
+
 RED = "\033[31m"
 RESET = "\033[0m"
 
@@ -68,9 +70,25 @@ class Board:
             self.visited_shapes.discard(shape)
         self.visited[pos[0]][pos[1]] = 0
 
-    # TODO
-    def evaluate_board_state(self) -> float:
-        return 0.0
+    def evaluate_board_state_1(
+        self, old_pos: Tuple[int, int], new_pos: Tuple[int, int]
+    ) -> float:
+        """
+        Evaluates based on simple attributes like distance.
+        If it has travelled to a place with a shorter distance than before, receives a +1
+        If it is the same, a 0
+        Otherwise, -1
+        """
+        old_distance = manhattan_distance(old_pos, self.goal)
+        new_distance = manhattan_distance(new_pos, self.goal)
+
+        return (
+            1
+            if new_distance < old_distance
+            else 0
+            if new_distance == old_distance
+            else -1
+        )
 
     def get_available_actions(self) -> List[Tuple[int, int]]:
         return [(0, 0)]
