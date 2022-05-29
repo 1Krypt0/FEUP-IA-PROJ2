@@ -1,5 +1,7 @@
 from gym import Env, spaces
 from typing import Tuple
+
+from gym.spaces.discrete import Discrete
 from board import Board, is_complete
 import copy
 
@@ -17,8 +19,8 @@ class TakeTheLEnv(Env):
         self.state = Board(difficulty)
         self.difficulty = difficulty
         self.pos = self.state.start
-        self.action_space = spaces.Discrete(4)
-        self.observation_space = spaces.Discrete(self.state.size**2)
+        self.action_space: Discrete = spaces.Discrete(4)
+        self.observation_space: Discrete = spaces.Discrete(self.state.size**2)
 
     def step(self, action: int) -> Tuple[Board, float, bool, dict]:
         movement: Tuple[int, int] = self.state.ACTIONS[action]
@@ -28,6 +30,7 @@ class TakeTheLEnv(Env):
 
     def reset(self):
         self.state.reset()
+        self.state.visit(self.state.start)
 
     # NOTE: For mow it is using print. Later change to pygame
     def render(self, mode="human"):

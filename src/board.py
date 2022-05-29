@@ -39,10 +39,10 @@ class Board:
     """
 
     ACTIONS = [
+        (0, -1),  # LEFT
         (1, 0),  # DOWN
         (0, 1),  # RIGHT
         (-1, 0),  # UP
-        (0, -1),  # LEFT
     ]
 
     def __init__(self, difficulty: int) -> None:
@@ -75,10 +75,13 @@ class Board:
     ) -> float:
         """
         Evaluates based on simple attributes like distance.
+        If it has reached its destination, +10
         If it has travelled to a place with a shorter distance than before, receives a +1
         If it is the same, a 0
         Otherwise, -1
         """
+        if new_pos == self.goal:
+            return 10
         old_distance = manhattan_distance(old_pos, self.goal)
         new_distance = manhattan_distance(new_pos, self.goal)
 
@@ -90,8 +93,13 @@ class Board:
             else -1
         )
 
-    def get_available_actions(self) -> List[Tuple[int, int]]:
-        return [(0, 0)]
+    def get_available_actions(self, pos: Tuple[int, int]) -> List[int]:
+        actions = []
+        for i in range(len(self.ACTIONS)):
+            new_pos = [pos[0] + self.ACTIONS[i][0], pos[1] + self.ACTIONS[i][1]]
+            if check_bounds(self, new_pos):
+                actions.append(i)
+        return actions
 
     def __repr__(self) -> str:
         print(self.size)
