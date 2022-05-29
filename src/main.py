@@ -1,6 +1,4 @@
 from env import TakeTheLEnv
-import numpy as np
-import random
 
 
 def main():
