@@ -70,28 +70,15 @@ class Board:
             self.visited_shapes.discard(shape)
         self.visited[pos[0]][pos[1]] = 0
 
-    def evaluate_board_state_1(
-        self, old_pos: Tuple[int, int], new_pos: Tuple[int, int]
-    ) -> float:
+    def evaluate_board_state_1(self, new_pos: Tuple[int, int]) -> float:
         """
         Evaluates based on simple attributes like distance.
         If it has reached its destination, +10
-        If it has travelled to a place with a shorter distance than before, receives a +1
-        If it is the same, a 0
-        Otherwise, -1
+        If it has travelled to a regular place, 0
         """
         if new_pos == self.goal:
             return 10
-        old_distance = manhattan_distance(old_pos, self.goal)
-        new_distance = manhattan_distance(new_pos, self.goal)
-
-        return (
-            1
-            if new_distance < old_distance
-            else 0
-            if new_distance == old_distance
-            else -1
-        )
+        return 0
 
     def get_available_actions(self, pos: Tuple[int, int]) -> List[int]:
         actions = []

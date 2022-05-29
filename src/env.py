@@ -3,7 +3,6 @@ from typing import Tuple
 
 from gym.spaces.discrete import Discrete
 from board import Board, is_complete
-import copy
 
 LEFT = 0
 DOWN = 1
@@ -38,8 +37,7 @@ class TakeTheLEnv(Env):
 
     # NOTE: When info should be added, it should be in this method
     def perform_step(self, step: Tuple[int, int]) -> Tuple[float, dict]:
-        old_pos = copy.deepcopy(self.pos)
         new_pos = (self.pos[0] + step[0], self.pos[1] + step[1])
         self.state.visit(new_pos)
-        reward: float = self.state.evaluate_board_state_1(old_pos, new_pos)
+        reward: float = self.state.evaluate_board_state_1(new_pos)
         return reward, {}
