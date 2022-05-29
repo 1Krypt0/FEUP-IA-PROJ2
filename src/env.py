@@ -82,12 +82,13 @@ class TakeTheLEnv(Env):
             for j in range(0, BOARD_COLS):
                 if self.board[i, j] == 1:
                     token = "*"
-                if self.board[i, j] == -1:
+                elif self.board[i, j] == -1:
                     token = "z"
-                if self.board[i, j] == 0:
+                elif self.board[i, j] == 0:
                     token = "0"
                 else:
-                    token = ""
+                    token = " "
+
                 out += token + " | "
             print(out)
         print("-----------------")
