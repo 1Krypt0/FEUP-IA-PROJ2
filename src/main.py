@@ -1,5 +1,5 @@
 from env import TakeTheLEnv
-
+import algs
 
 def main():
     print("Loading the environment")
@@ -12,8 +12,9 @@ def main():
     state_size: int = env.observation_space.n
     print(f"action size: {action_size}, state size: {state_size}")
 
-    env.close()
+    algs.qlearn(env)
 
+    env.close()
 
 if __name__ == "__main__":
     main()
