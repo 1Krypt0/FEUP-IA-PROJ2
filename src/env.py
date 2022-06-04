@@ -69,10 +69,11 @@ class TakeTheLEnv(Env):
         )
 
     def determine_reward(self) -> float:
-        if self.reached_end():
-            return 1
-        else:
-            return 0
+        return -0.1 * (self.goal_state[0] - self.state[0]) 
+        # if self.reached_end():
+        #     return 1
+        # else:
+        #     return 0
 
     def showBoard(self) -> None:
         self.board[self.state] = 1
