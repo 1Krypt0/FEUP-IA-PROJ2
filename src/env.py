@@ -15,11 +15,11 @@ UP = 3
 class TakeTheLEnv(Env):
     def __init__(self) -> None:
         self.board: List[List[int]] = [
-            [1, 1, 1, 0, 0],
-            [2, 0, 1, 4, 4],
+            [0, 0, 1, 0, 0],
+            [2, 2, 1, 4, 4],
+            [2, 1, 1, 3, 4],
             [2, 0, 0, 3, 4],
-            [2, 2, 0, 3, 4],
-            [0, 0, 0, 3, 3],
+            [0, 0, 3, 3, 0],
         ]
         self.size: int = len(self.board)
         self.start_state: Tuple[int, int] = (self.size - 1, 0)
@@ -36,11 +36,11 @@ class TakeTheLEnv(Env):
 
     def reset(self) -> None:
         self.board = [
-            [1, 1, 1, 0, 0],
-            [2, 0, 1, 4, 4],
+            [0, 0, 1, 0, 0],
+            [2, 2, 1, 4, 4],
+            [2, 1, 1, 3, 4],
             [2, 0, 0, 3, 4],
-            [2, 2, 0, 3, 4],
-            [0, 0, 0, 3, 3],
+            [0, 0, 3, 3, 0],
         ]
         self.visited = [[0 for _ in range(self.size)] for _ in range(self.size)]
         self.visited[self.start_state[0]][self.start_state[1]] = 1
@@ -92,15 +92,15 @@ class TakeTheLEnv(Env):
     def determine_reward(self, state) -> float:
         val = self.board[state[0]][state[1]]
         at_end = self.reached_end(state)
-        already_visited = self.board[state[0]][state[1]] == 1
-        if at_end:
-            return 20
+        all_visited = self.all_visited()
+        if at_end and all_visited:
+            return 50
+        if at_end and not all_visited:
+            return 10
         if val == 0:
             return -1
-        if already_visited:
-            return -1
         if val not in self.visited_shapes:
-            return 2
+            return 10
         if val in self.visited_shapes:
             return -1
         else:
