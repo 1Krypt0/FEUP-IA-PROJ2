@@ -11,16 +11,16 @@ qtable = np.zeros((env.observation_space.n, env.action_space.n))
 print(qtable)
 
 # the total number of episodes to run
-total_episodes = 200
+total_episodes = 500
 
 # the maximum number of steps per episode
 max_steps = 500
 
 # the learning rate
-learning_rate = 0.8
+learning_rate = 0.5
 
 # the discount factor
-gamma = 0.95
+gamma = 0.6
 
 # the range for the exploration parameter epsilon
 epsilon = 0.2
@@ -51,20 +51,20 @@ def update_qlearning(state, new_state, reward, action):
     )
 
 
-def qlearn(environment):
+def qlearn():
     for episode in range(total_episodes):
-        environment.reset()
-        state = environment.start_state
+        env.reset()
+        state = env.start_state
         done = False
         total_rewards = 0
 
         for _ in range(max_steps):
             # Converting the state to a position on the table
-            idx = environment.size * state[0] + state[1]
+            idx = env.size * state[0] + state[1]
             action = choose_action(idx)
 
-            new_state, reward, done, info = environment.step(state, action)
-            new_idx = environment.size * new_state[0] + new_state[1]
+            new_state, reward, done, info = env.step(state, action)
+            new_idx = env.size * new_state[0] + new_state[1]
 
             update_qlearning(idx, new_idx, reward, action)
 
@@ -75,6 +75,7 @@ def qlearn(environment):
             if done:
                 if total_rewards < 0:
                     print("Failed episode:", episode)
+                env.render()
                 print("Total reward for episode {}: {}".format(episode, total_rewards))
                 break
 
