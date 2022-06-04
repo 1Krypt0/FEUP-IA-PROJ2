@@ -1,86 +1,101 @@
 import numpy as np
+import matplotlib.pyplot as plt
 import random
+
+from env import TakeTheLEnv
+
+env = TakeTheLEnv()
+
+
+qtable = np.zeros((env.observation_space.n, env.action_space.n))
+print(qtable)
+
+# the total number of episodes to run
+total_episodes = 200
+
+# the maximum number of steps per episode
+max_steps = 500
+
+# the learning rate
+learning_rate = 0.8
+
+# the discount factor
+gamma = 0.95
+
+# the range for the exploration parameter epsilon
+epsilon = 0.2
+min_epsilon = 0.01
+max_epsilon = 1.0
+
+# the epsilon decay rate
+decay_rate = 0.01
+
+rewards = []
+epsilons = []
+
+
+def choose_action(state):
+    exp_exp_tradeoff = random.uniform(0, 1)
+
+    if exp_exp_tradeoff > epsilon:
+        action = np.argmax(qtable[state, :])
+    else:
+        action = env.action_space.sample()
+        # print(f"action is {action}")
+    return action
+
+
+def update_qlearning(state, new_state, reward, action):
+    qtable[state, action] = qtable[state, action] + learning_rate * (
+        reward + gamma * np.max(qtable[new_state, :]) - qtable[state, action]
+    )
 
 
 def qlearn(environment):
-    qtable = np.zeros((environment.observation_space.n, environment.action_space.n))
-    print(qtable)
-
-    # the total number of episodes to run
-    total_episodes = 200
-
-    # the maximum number of steps per episode
-    max_steps = 99
-
-    # the learning rate
-    learning_rate = 0.8
-
-    # the discount factor
-    gamma = 0.95
-
-    # the range for the exploration parameter epsilon
-    epsilon = 1.0
-    min_epsilon = 0.01
-    max_epsilon = 1.0
-
-    # the epsilon decay rate
-    decay_rate = 0.001
-
-    rewards = []
-
-    """
-    if neutral 0
-    if new L +10
-    if same L -10
-    if end and all visited +50
-    if end and not all visited -25
-    """
-
     for episode in range(total_episodes):
         environment.reset()
         state = environment.start_state
-        print(f"state: {state}")
         done = False
         total_rewards = 0
-        for _ in range(max_steps):
-            idx = environment.size * state[0] + state[1]
-            exp_exp_tradeoff = random.uniform(0, 1)
-            print(f"exp_exp_tradeoff: {exp_exp_tradeoff}")
 
-            if exp_exp_tradeoff > epsilon:
-                action = np.argmax(qtable[idx, :])
-            else:
-                action = environment.action_space.sample()
-                print(f"action is {action}")
+        for _ in range(max_steps):
+            # Converting the state to a position on the table
+            idx = environment.size * state[0] + state[1]
+            action = choose_action(idx)
 
             new_state, reward, done, info = environment.step(state, action)
-
-            print(f"The new state in q-learning is {new_state}")
-
             new_idx = environment.size * new_state[0] + new_state[1]
-            print(
-                f"new_state: {new_state}, reward: {reward}, done: {done}, info: {info}"
-            )
-            qtable[idx, action] = qtable[idx, action] + learning_rate * (
-                reward + gamma * np.max(qtable[new_idx, :]) - qtable[idx, action]
-            )
 
-            print(f"qtable: {qtable}")
+            update_qlearning(idx, new_idx, reward, action)
 
-            total_rewards = total_rewards + reward
-            print(f"total_rewards {total_rewards}")
+            total_rewards += reward
 
             state = new_state
 
-            environment.render()
             if done:
+                if total_rewards < 0:
+                    print("Failed episode:", episode)
+                print("Total reward for episode {}: {}".format(episode, total_rewards))
                 break
 
         epsilon = min_epsilon + (max_epsilon - min_epsilon) * np.exp(
             -decay_rate * episode
         )
         rewards.append(total_rewards)
+        epsilons.append(epsilon)
 
     print("Score/time: " + str(sum(rewards) / total_episodes))
     print(qtable)
-    print(epsilon)
+
+    x = range(total_episodes)
+    plt.plot(x, rewards)
+    plt.xlabel("Episode")
+    plt.ylabel("Training total reward")
+    plt.title("Total rewards over all episodes in training")
+    plt.show()
+
+    plt.plot(epsilons)
+    plt.xlabel("Episode")
+    plt.ylabel("Epsilon")
+    plt.title("Epsilon for episode")
+    plt.show()
