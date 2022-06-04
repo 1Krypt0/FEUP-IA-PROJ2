@@ -1,11 +1,9 @@
-from copy import deepcopy
 from typing import List, Set, Tuple
 from gym import Env, spaces
 import numpy as np
 
-from utils import manhattan_distance
-
-
+RED = "\033[31m"
+RESET = "\033[0m"
 BOARD_ROWS = 4
 BOARD_COLS = 4
 LEFT = 0
@@ -15,23 +13,22 @@ UP = 3
 
 
 class TakeTheLEnv(Env):
-
-    metadata = {"render_modes": ["human", "rgb_array"], "render_fps": 50}
-
     def __init__(self) -> None:
         self.board: List[List[int]] = [
-            [1, 1, 1, 2, 2, 0],
-            [0, 3, 1, 2, 4, 0],
-            [0, 3, 0, 2, 4, 5],
-            [0, 3, 3, 4, 4, 5],
-            [0, 6, 6, 6, 5, 5],
-            [0, 0, 0, 6, 0, 0],
+            [1, 1, 1, 0, 0],
+            [2, 0, 1, 4, 4],
+            [2, 0, 0, 3, 4],
+            [2, 2, 0, 3, 4],
+            [0, 0, 0, 3, 3],
         ]
         self.size: int = len(self.board)
         self.start_state: Tuple[int, int] = (self.size - 1, 0)
         self.goal_state: Tuple[int, int] = (0, self.size - 1)
-        self.visited = set()
+        self.visited_shapes = set()
+        self.visited = [[0 for _ in range(self.size)] for _ in range(self.size)]
         self.all_shapes = self.determine_shapes(self.board)
+
+        self.visited[self.start_state[0]][self.start_state[1]] = 1
 
         # Gym specific variables
         self.action_space: spaces.Discrete = spaces.Discrete(4)
@@ -39,13 +36,14 @@ class TakeTheLEnv(Env):
 
     def reset(self) -> None:
         self.board = [
-            [1, 1, 1, 2, 2, 0],
-            [0, 3, 1, 2, 4, 0],
-            [0, 3, 0, 2, 4, 5],
-            [0, 3, 3, 4, 4, 5],
-            [0, 6, 6, 6, 5, 5],
-            [0, 0, 0, 6, 0, 0],
+            [1, 1, 1, 0, 0],
+            [2, 0, 1, 4, 4],
+            [2, 0, 0, 3, 4],
+            [2, 2, 0, 3, 4],
+            [0, 0, 0, 3, 3],
         ]
+        self.visited = [[0 for _ in range(self.size)] for _ in range(self.size)]
+        self.visited[self.start_state[0]][self.start_state[1]] = 1
 
     # NOTE: For mow it is using print. Later change to pygame
     def render(self) -> None:
@@ -76,6 +74,11 @@ class TakeTheLEnv(Env):
         reward: float = self.determine_reward(new_state)
         info: dict = {}
 
+        if self.board[new_state[0]][new_state[1]] != 0:
+            self.visited_shapes.add(self.board[new_state[0]][new_state[1]])
+
+        self.visited[new_state[0]][new_state[1]] = 1
+
         return new_state, reward, done, info
 
     def reached_end(self, state) -> bool:
@@ -88,16 +91,20 @@ class TakeTheLEnv(Env):
 
     def determine_reward(self, state) -> float:
         val = self.board[state[0]][state[1]]
-        if self.reached_end(state) and self.all_visited():
-            return 50
-        if self.reached_end(state) and (not self.all_visited()):
-            return -25
-        if val not in self.visited:
-            return 10
-        if val in self.visited:
-            return -10
+        at_end = self.reached_end(state)
+        already_visited = self.board[state[0]][state[1]] == 1
+        if at_end:
+            return 20
+        if val == 0:
+            return -1
+        if already_visited:
+            return -1
+        if val not in self.visited_shapes:
+            return 2
+        if val in self.visited_shapes:
+            return -1
         else:
-            return 0
+            return -1
 
     def determine_shapes(self, board: List[List[int]]) -> Set[int]:
         """
@@ -124,23 +131,39 @@ class TakeTheLEnv(Env):
         Return:
             all_visited (bool): whether the player has visited all the shapes
         """
-        return self.visited == self.all_shapes
+        return self.visited_shapes == self.all_shapes
 
-    # TODO: Change to fit new board style
     def showBoard(self) -> None:
-        for i in range(0, BOARD_ROWS):
-            print("-----------------")
-            out = "| "
-            for j in range(0, BOARD_COLS):
-                if self.board[i][j] == 1:
-                    token = "*"
-                elif self.board[i][j] == -1:
-                    token = "z"
-                elif self.board[i][j] == 0:
-                    token = "0"
-                else:
-                    token = " "
+        padding_left = 3
+        padding_right = 2
+        padding_top = "  _" + self.size * "____"
+        padding_bot = "  ‾" + self.size * "‾‾‾‾"
+        number_space = "   "
+        if len(self.all_shapes) >= 10:
+            padding_left += 1
+            padding_right += 1
+            padding_top += self.size * "_"
+            padding_bot += self.size * "‾"
+            number_space = "    "
 
-                out += token + " | "
-            print(out)
-        print("-----------------")
+        final = "\n "
+        for i in range(self.size):
+            final += number_space + str(i)
+        final += "\n"
+        final += padding_top
+        final += "\n"
+        for line in range(self.size):
+            final += str(line) + " "
+            for col in range(self.size):
+                final += (
+                    "|"
+                    + RED * self.visited[line][col]
+                    + str(self.board[line][col])
+                    .rjust(padding_right)
+                    .ljust(padding_left)
+                    + RESET
+                )
+            final += "|\n"
+        final += padding_bot
+        final += "\n"
+        print(final)
