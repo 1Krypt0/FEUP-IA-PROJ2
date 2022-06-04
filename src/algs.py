@@ -11,10 +11,10 @@ qtable = np.zeros((env.observation_space.n, env.action_space.n))
 print(qtable)
 
 # the total number of episodes to run
-total_episodes = 500
+total_episodes = 1000
 
 # the maximum number of steps per episode
-max_steps = 500
+max_steps = 1000
 
 # the learning rate
 learning_rate = 0.5
@@ -32,6 +32,10 @@ decay_rate = 0.01
 
 rewards = []
 epsilons = []
+
+def reset_globals():
+    rewards = []
+    epsilons = []
 
 
 def choose_action(state):
@@ -57,6 +61,7 @@ def update_sarsa(state, new_state, reward, action, new_action):
 
 
 def qlearn(sarsa):
+    global qtable
     for episode in range(total_episodes):
         env.reset()
         state = env.start_state
@@ -109,3 +114,7 @@ def qlearn(sarsa):
     plt.ylabel("Epsilon")
     plt.title("Epsilon for episode")
     plt.show()
+
+    qtable = np.zeros((env.observation_space.n, env.action_space.n))
+    rewards.clear()
+    epsilons.clear()

@@ -4,8 +4,8 @@ import algs
 
 def main():
 
-    # print("Q-LEARNING")
-    # algs.qlearn(False)
+    print("Q-LEARNING")
+    algs.qlearn(False)
 
     print("SARSA")
     algs.qlearn(True)
