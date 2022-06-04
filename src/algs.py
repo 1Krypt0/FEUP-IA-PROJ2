@@ -11,7 +11,7 @@ qtable = np.zeros((env.observation_space.n, env.action_space.n))
 print(qtable)
 
 # the total number of episodes to run
-total_episodes = 1000
+total_episodes = 2000
 
 # the maximum number of steps per episode
 max_steps = 1000
@@ -75,7 +75,7 @@ def qlearn(sarsa):
 
             new_state, reward, done, info = env.step(state, action)
             new_idx = env.size * new_state[0] + new_state[1]
-
+            
             if sarsa:
                 new_action = choose_action(new_idx)
                 update_sarsa(idx, new_idx, reward, action, new_action)
