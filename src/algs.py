@@ -50,8 +50,13 @@ def update_qlearning(state, new_state, reward, action):
         reward + gamma * np.max(qtable[new_state, :]) - qtable[state, action]
     )
 
+def update_sarsa(state, new_state, reward, action, new_action):
+    qtable[state, action] = qtable[state, action] + learning_rate * (
+        reward + gamma * qtable[new_state, new_action] - qtable[state, action]
+    )
 
-def qlearn():
+
+def qlearn(sarsa):
     for episode in range(total_episodes):
         env.reset()
         state = env.start_state
@@ -66,7 +71,11 @@ def qlearn():
             new_state, reward, done, info = env.step(state, action)
             new_idx = env.size * new_state[0] + new_state[1]
 
-            update_qlearning(idx, new_idx, reward, action)
+            if sarsa:
+                new_action = choose_action(new_idx)
+                update_sarsa(idx, new_idx, reward, action, new_action)
+            else:
+                update_qlearning(idx, new_idx, reward, action)
 
             total_rewards += reward
 
