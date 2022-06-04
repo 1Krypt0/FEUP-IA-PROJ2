@@ -1,4 +1,3 @@
-import env
 import numpy as np
 import random
 
