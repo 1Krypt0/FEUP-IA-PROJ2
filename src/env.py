@@ -15,10 +15,10 @@ UP = 3
 class TakeTheLEnv(Env):
     def __init__(self) -> None:
         self.board: List[List[int]] = [
-            [0, 0, 1, 0, 0],
-            [2, 2, 1, 4, 4],
-            [2, 1, 1, 3, 4],
-            [2, 0, 0, 3, 4],
+            [2, 2, 0, 0, 0],
+            [2, 0, 1, 4, 4],
+            [2, 0, 1, 3, 4],
+            [0, 1, 1, 3, 4],
             [0, 0, 3, 3, 0],
         ]
         self.size: int = len(self.board)
@@ -36,10 +36,10 @@ class TakeTheLEnv(Env):
 
     def reset(self) -> None:
         self.board = [
-            [0, 0, 1, 0, 0],
-            [2, 2, 1, 4, 4],
-            [2, 1, 1, 3, 4],
-            [2, 0, 0, 3, 4],
+            [2, 2, 0, 0, 0],
+            [2, 0, 1, 4, 4],
+            [2, 0, 1, 3, 4],
+            [0, 1, 1, 3, 4],
             [0, 0, 3, 3, 0],
         ]
         self.visited = [[0 for _ in range(self.size)] for _ in range(self.size)]
@@ -94,23 +94,20 @@ class TakeTheLEnv(Env):
 
         # won game
         if self.reached_end(state) and self.all_visited():
-            print("here!")
-            return 100
-        elif self.reached_end(state):
-            return -10
-
-        # lost game
-        if self.visited[state[0]][state[1]]:
-            return -100
-        if val in self.visited_shapes:
-            return -10
-
-        if val not in self.visited_shapes:
             return 10
-        
+        if self.reached_end(state) and (not self.all_visited()):
+            return -1
+        # didn't win game yet
+        # if self.visited[state[0]][state[1]] == 1:
+        #    return -1
+        if val == 0 and (self.visited[state[0]][state[1]] == 1):
+            return -1
+        if val in self.visited_shapes:
+            return -5
+        if val not in self.visited_shapes:
+            return 3
         else:
-            return 0
-            
+            return -1
 
     def determine_shapes(self, board: List[List[int]]) -> Set[int]:
         """
