@@ -11,7 +11,7 @@ qtable = np.zeros((env.observation_space.n, env.action_space.n))
 print(qtable)
 
 
-total_episodes = 200  # the total number of episodes to run
+total_episodes = 500  # the total number of episodes to run
 max_steps = 100  # the maximum number of steps per episode
 
 learning_rate = 0.5  # the learning rate
