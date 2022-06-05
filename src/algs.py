@@ -19,7 +19,7 @@ learning_rate = 0.5  # the learning rate
 gamma = 0.6  # the discount factor
 
 # the range for the exploration parameter epsilon
-epsilon = 0.2
+epsilon = 0.1
 min_epsilon = 0.01
 max_epsilon = 1.0
 decay_rate = 0.01
@@ -52,6 +52,7 @@ def update_sarsa(state, new_state, reward, action, new_action):
 
 def qlearn(sarsa):
     global qtable
+    success = 0
     for episode in range(total_episodes):
         state = env.reset()
         done = False
@@ -75,7 +76,9 @@ def qlearn(sarsa):
             if done:
                 if total_rewards < 0:
                     print("Failed episode:", episode)
-                env.render()
+                else:
+                    env.render()
+                    success += 1
                 print("Total reward for episode {}: {}".format(episode, total_rewards))
                 break
 
@@ -86,6 +89,7 @@ def qlearn(sarsa):
         epsilons.append(epsilon)
 
     print("Score/time: " + str(sum(rewards) / total_episodes))
+    print("success of", success/total_episodes)
     print(qtable)
 
     x = range(total_episodes)

@@ -20,10 +20,10 @@ class TakeTheLEnv(Env):
         super(TakeTheLEnv, self).__init__()
 
         self.board = [
-            [2, 2, 0, 0],
-            [2, 0, 1, 0],
-            [2, 0, 1, 0],
-            [0, 1, 1, 0],
+            [1, 3, 3, 0],
+            [1, 0, 3, 2],
+            [1, 1, 3, 2],
+            [0, 0, 2, 2]
         ]
         self.size = len(self.board)
         self.state = (self.size - 1, 0)
@@ -67,13 +67,17 @@ class TakeTheLEnv(Env):
         value = self.board[new_pos[0]][new_pos[1]]
         is_visited = self.visited[new_pos[0]][new_pos[1]] == 1
         if is_visited:
-            return -10
+            return -50
         if value in self.visited_shapes:
-            return -10
+            return -50
         if new_pos == (0, self.size - 1) and self.visited_shapes == self.all_shapes:
             return 10
+        if new_pos == (0, self.size - 1) and self.visited_shapes != self.all_shapes:
+            return -50
         if value not in self.visited_shapes and value != 0:
             return 10
+        if value == 0:
+            return -10
         else:
             return -1
 
