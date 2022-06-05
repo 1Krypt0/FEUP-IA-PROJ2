@@ -10,24 +10,18 @@ env = TakeTheLEnv()
 qtable = np.zeros((env.observation_space.n, env.action_space.n))
 print(qtable)
 
-# the total number of episodes to run
-total_episodes = 200
 
-# the maximum number of steps per episode
-max_steps = 100
+total_episodes = 200  # the total number of episodes to run
+max_steps = 100  # the maximum number of steps per episode
 
-# the learning rate
-learning_rate = 0.5
+learning_rate = 0.5  # the learning rate
 
-# the discount factor
-gamma = 0.6
+gamma = 0.6  # the discount factor
 
 # the range for the exploration parameter epsilon
 epsilon = 0.2
 min_epsilon = 0.01
 max_epsilon = 1.0
-
-# the epsilon decay rate
 decay_rate = 0.01
 
 rewards = []
