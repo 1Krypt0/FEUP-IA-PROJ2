@@ -91,20 +91,6 @@ class TakeTheLEnv(Env):
 
     def determine_reward(self, state) -> float:
         val = self.board[state[0]][state[1]]
-        # at_end = self.reached_end(state)
-        # all_visited = self.all_visited()
-        # if at_end and all_visited:
-        #     return 50
-        # if at_end and not all_visited:
-        #     return 10
-        # if val == 0:
-        #     return -1
-        # if val not in self.visited_shapes:
-        #     return 10
-        # if val in self.visited_shapes:
-        #     return -1
-        # else:
-        #     return -1
 
         # won game
         if self.reached_end(state) and self.all_visited():
@@ -115,7 +101,7 @@ class TakeTheLEnv(Env):
 
         # lost game
         if self.visited[state[0]][state[1]]:
-            return -10
+            return -100
         if val in self.visited_shapes:
             return -10
 
