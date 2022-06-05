@@ -50,35 +50,63 @@ class TakeTheLEnv(Env):
 
     def step(self, action):
         new_pos = self.increment(self.state, action)
+
         new_state = self.to_idx(new_pos)
+        reward = self.give_reward(new_pos)
+        done = new_pos == (0, self.size - 1)
         self.visited[new_pos[0]][new_pos[1]] = 1
-        reward = self.give_reward()
-        done = self.state == (0, self.size - 1)
+        if self.board[new_pos[0]][new_pos[1]] != 0:
+            self.visited_shapes.add(self.board[new_pos[0]][new_pos[1]])
+
         return new_state, reward, done, {}
 
     def set_state(self, new_state):
         self.state = new_state
 
-    def give_reward(self):
-        # value = self.board[self.state[0]][self.state[1]]
-        if self.state == (0, self.size - 1):
+    def give_reward(self, new_pos):
+        value = self.board[new_pos[0]][new_pos[1]]
+        is_visited = self.visited[new_pos[0]][new_pos[1]] == 1
+        if is_visited:
+            return -10
+        if value in self.visited_shapes:
+            return -10
+        if new_pos == (0, self.size - 1) and self.visited_shapes == self.all_shapes:
+            return 10
+        if value not in self.visited_shapes and value != 0:
             return 10
         else:
-            return -1  # / manhattan_distance(self.state, (0, self.size - 1))
+            return -1
 
     def reset(self):
         self.state = (self.size - 1, 0)
         self.visited = [[0 for _ in range(self.size)] for _ in range(self.size)]
         self.visited[self.state[0]][self.state[1]] = 1
-        # self.all_shapes = set()
+        self.visited_shapes = set()
+        self.all_shapes = self.determine_shapes()
         return self.to_idx(self.state)
 
     def render(self, mode="human"):
-        print(self.board)
-        # self.show_board()
+        self.show_board()
 
     def close(self):
         return super().close()
+
+    def determine_shapes(self) -> set:
+        """
+        Determines shapes from board content
+            Parameters:
+                board (list[list[int]]): the content of the board
+
+            Returns:
+                shapes (set): the set of different shapes in the board
+        """
+
+        final = set()
+        for line in self.board:
+            for num in line:
+                if num not in final and num != 0:
+                    final.add(num)
+        return final
 
     def show_board(self) -> None:
         padding_left = 3
@@ -86,12 +114,12 @@ class TakeTheLEnv(Env):
         padding_top = "  _" + self.size * "____"
         padding_bot = "  ‾" + self.size * "‾‾‾‾"
         number_space = "   "
-        if len(self.all_shapes) >= 10:
-            padding_left += 1
-            padding_right += 1
-            padding_top += self.size * "_"
-            padding_bot += self.size * "‾"
-            number_space = "    "
+        # if len(self.all_shapes) >= 10:
+        #     padding_left += 1
+        #     padding_right += 1
+        #     padding_top += self.size * "_"
+        #     padding_bot += self.size * "‾"
+        #     number_space = "    "
 
         final = "\n "
         for i in range(self.size):
