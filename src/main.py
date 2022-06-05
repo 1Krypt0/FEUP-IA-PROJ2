@@ -3,16 +3,12 @@ import algs
 
 
 def main():
-    print("Loading the environment")
-    print("Environemnt loaded succesffully")
 
-    # action_size: int = env.action_space.n
-    # state_size: int = env.observation_space.n
-    # print(f"action size: {action_size}, state size: {state_size}")
+    print("Q-LEARNING")
+    algs.qlearn(False)
 
-    algs.qlearn()
-
-    # env.close()
+    print("SARSA")
+    algs.qlearn(True)
 
 
 if __name__ == "__main__":

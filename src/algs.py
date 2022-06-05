@@ -11,10 +11,10 @@ qtable = np.zeros((env.observation_space.n, env.action_space.n))
 print(qtable)
 
 # the total number of episodes to run
-total_episodes = 500
+total_episodes = 2000
 
 # the maximum number of steps per episode
-max_steps = 500
+max_steps = 1000
 
 # the learning rate
 learning_rate = 0.5
@@ -33,6 +33,10 @@ decay_rate = 0.01
 rewards = []
 epsilons = []
 
+def reset_globals():
+    rewards = []
+    epsilons = []
+
 
 def choose_action(state):
     exp_exp_tradeoff = random.uniform(0, 1)
@@ -50,8 +54,14 @@ def update_qlearning(state, new_state, reward, action):
         reward + gamma * np.max(qtable[new_state, :]) - qtable[state, action]
     )
 
+def update_sarsa(state, new_state, reward, action, new_action):
+    qtable[state, action] = qtable[state, action] + learning_rate * (
+        reward + gamma * qtable[new_state, new_action] - qtable[state, action]
+    )
 
-def qlearn():
+
+def qlearn(sarsa):
+    global qtable
     for episode in range(total_episodes):
         env.reset()
         state = env.start_state
@@ -65,8 +75,12 @@ def qlearn():
 
             new_state, reward, done, info = env.step(state, action)
             new_idx = env.size * new_state[0] + new_state[1]
-
-            update_qlearning(idx, new_idx, reward, action)
+            
+            if sarsa:
+                new_action = choose_action(new_idx)
+                update_sarsa(idx, new_idx, reward, action, new_action)
+            else:
+                update_qlearning(idx, new_idx, reward, action)
 
             total_rewards += reward
 
@@ -100,3 +114,7 @@ def qlearn():
     plt.ylabel("Epsilon")
     plt.title("Epsilon for episode")
     plt.show()
+
+    qtable = np.zeros((env.observation_space.n, env.action_space.n))
+    rewards.clear()
+    epsilons.clear()
