@@ -19,13 +19,12 @@ class TakeTheLEnv(Env):
     def __init__(self) -> None:
         super(TakeTheLEnv, self).__init__()
 
-        self.board = np.zeros([4, 4])  # [
-        #     [2, 2, 0, 0, 0],
-        #     [2, 0, 1, 4, 4],
-        #     [2, 0, 1, 3, 4],
-        #     [0, 1, 1, 3, 4],
-        #     [0, 0, 3, 3, 0],
-        # ]
+        self.board = [
+            [2, 2, 0, 0],
+            [2, 0, 1, 0],
+            [2, 0, 1, 0],
+            [0, 1, 1, 0],
+        ]
         self.size = len(self.board)
         self.state = (self.size - 1, 0)
         self.action_space = Discrete(4)
