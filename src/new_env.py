@@ -1,3 +1,5 @@
+import numpy as np
+from utils import manhattan_distance
 from gym.core import Env
 from gym.spaces.discrete import Discrete
 
@@ -17,24 +19,20 @@ class TakeTheLEnv(Env):
     def __init__(self) -> None:
         super(TakeTheLEnv, self).__init__()
 
-        self.board = [
-            [2, 2, 0, 0, 0],
-            [2, 0, 1, 4, 4],
-            [2, 0, 1, 3, 4],
-            [0, 1, 1, 3, 4],
-            [0, 0, 3, 3, 0],
-        ]
+        self.board = np.zeros([4, 4])  # [
+        #     [2, 2, 0, 0, 0],
+        #     [2, 0, 1, 4, 4],
+        #     [2, 0, 1, 3, 4],
+        #     [0, 1, 1, 3, 4],
+        #     [0, 0, 3, 3, 0],
+        # ]
         self.size = len(self.board)
-        self.state = (0, 0)
+        self.state = (self.size - 1, 0)
         self.action_space = Discrete(4)
         self.observation_space = Discrete(self.size**2)
 
     def to_idx(self, pos):
         return self.size * pos[0] + pos[1]
-
-    # idx / size  = z
-    # idx % size = 0
-    # idx = size * 0 + 1 <=> 1 = idx / (size * 0)
 
     def from_idx(self, idx):
         return (idx // self.size, idx % self.size)
@@ -52,33 +50,33 @@ class TakeTheLEnv(Env):
         return (row, col)
 
     def step(self, action):
-        obs = self.to_idx(self.increment(self.state, action))
+        new_pos = self.increment(self.state, action)
+        new_state = self.to_idx(new_pos)
+        self.visited[new_pos[0]][new_pos[1]] = 1
         reward = self.give_reward()
         done = self.state == (0, self.size - 1)
-        return obs, reward, done, {}
+        return new_state, reward, done, {}
 
     def set_state(self, new_state):
         self.state = new_state
 
     def give_reward(self):
-        print(f"state is {self.state}")
-        value = self.board[self.state[0]][self.state[1]]
+        # value = self.board[self.state[0]][self.state[1]]
         if self.state == (0, self.size - 1):
             return 10
-        if value != 0:
-            return 1
         else:
-            return 0
+            return -1  # / manhattan_distance(self.state, (0, self.size - 1))
 
     def reset(self):
         self.state = (self.size - 1, 0)
         self.visited = [[0 for _ in range(self.size)] for _ in range(self.size)]
         self.visited[self.state[0]][self.state[1]] = 1
-        self.all_shapes = set()
+        # self.all_shapes = set()
         return self.to_idx(self.state)
 
     def render(self, mode="human"):
-        self.show_board()
+        print(self.board)
+        # self.show_board()
 
     def close(self):
         return super().close()
