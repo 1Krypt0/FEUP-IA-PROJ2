@@ -35,7 +35,6 @@ def choose_action(state):
         action = env.action_space.sample()
     else:
         action = np.argmax(qtable[state, :])
-        # print(f"action is {action}")
     return action
 
 
@@ -57,11 +56,9 @@ def qlearn(sarsa):
         state = env.reset()
         done = False
         total_rewards = 0
-
         for _ in range(max_steps):
             # Converting the state to a position on the table
             action = choose_action(state)
-
             new_state, reward, done, info = env.step(action)
 
             if sarsa:
