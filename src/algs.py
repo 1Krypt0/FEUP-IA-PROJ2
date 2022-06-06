@@ -14,7 +14,7 @@ print(qtable)
 total_episodes = 500  # the total number of episodes to run
 max_steps = 100  # the maximum number of steps per episode
 
-learning_rate = 0.5  # the learning rate
+learning_rate = 0.5
 
 gamma = 0.6  # the discount factor
 
@@ -89,7 +89,7 @@ def qlearn(sarsa):
         epsilons.append(epsilon)
 
     print("Score/time: " + str(sum(rewards) / total_episodes))
-    print("success of", success/total_episodes)
+    print("success of", success / total_episodes)
     print(qtable)
 
     x = range(total_episodes)
