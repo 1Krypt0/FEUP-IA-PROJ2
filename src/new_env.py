@@ -82,7 +82,7 @@ class TakeTheLEnv(Env):
 
     def reset(self):
         self.size = len(self.board)
-        self.action_space = Discrete(4)
+        self.action_space = Discrete(len(self.board[0]))
         self.observation_space = Discrete(self.size**2)
         self.state = (self.size - 1, 0)
         self.visited = [[0 for _ in range(self.size)] for _ in range(self.size)]
