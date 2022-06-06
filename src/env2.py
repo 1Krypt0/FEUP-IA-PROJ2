@@ -19,15 +19,19 @@ class TakeTheLEnv(Env):
     def __init__(self) -> None:
         super(TakeTheLEnv, self).__init__()
 
-        self.board = [[1, 2, 2, 0], [1, 0, 2, 0], [1, 1, 2, 0], [0, 0, 0, 0]]
+        self.board = [
+            [0, 1, 1, 0, 0, 0],
+            [0, 1, 0, 0, 2, 0],
+            [0, 1, 2, 2, 2, 3],
+            [0, 4, 4, 0, 0, 3],
+            [0, 4, 5, 0, 3, 3],
+            [0, 4, 5, 5, 5, 0]
+        ]
+        self.visited = [[0 for _ in range(self.size)] for _ in range(self.size)]
         self.size = len(self.board)
         self.state = (self.size - 1, 0)
         self.action_space = Discrete(4)
         self.observation_space = Discrete(self.size**2)
-
-    def set_board(self, new_board) -> None:
-        self.board = new_board
-        self.reset()
 
     def to_idx(self, pos):
         return self.size * pos[0] + pos[1]
@@ -76,14 +80,11 @@ class TakeTheLEnv(Env):
         if value not in self.visited_shapes and value != 0:
             return 10
         if value == 0:
-            return -0.25 * len(self.all_shapes)
+            return -10
         else:
             return -1
 
     def reset(self):
-        self.size = len(self.board)
-        self.action_space = Discrete(4)
-        self.observation_space = Discrete(self.size**2)
         self.state = (self.size - 1, 0)
         self.visited = [[0 for _ in range(self.size)] for _ in range(self.size)]
         self.visited[self.state[0]][self.state[1]] = 1
