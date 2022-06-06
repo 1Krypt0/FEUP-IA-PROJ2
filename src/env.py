@@ -1,5 +1,4 @@
 import numpy as np
-from utils import manhattan_distance
 from gym.core import Env
 from gym.spaces.discrete import Discrete
 
