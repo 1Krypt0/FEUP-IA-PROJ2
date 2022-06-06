@@ -27,8 +27,12 @@ class TakeTheLEnv(Env):
         ]
         self.size = len(self.board)
         self.state = (self.size - 1, 0)
-        self.action_space = Discrete(4)
+        self.action_space = Discrete(len(self.board[0]))
         self.observation_space = Discrete(self.size**2)
+
+    def set_board(self, new_board) -> None:
+        self.board = new_board
+        self.reset()
 
     def to_idx(self, pos):
         return self.size * pos[0] + pos[1]
@@ -82,6 +86,9 @@ class TakeTheLEnv(Env):
             return -1
 
     def reset(self):
+        self.size = len(self.board)
+        self.action_space = Discrete(len(self.board[0]))
+        self.observation_space = Discrete(self.size**2)
         self.state = (self.size - 1, 0)
         self.visited = [[0 for _ in range(self.size)] for _ in range(self.size)]
         self.visited[self.state[0]][self.state[1]] = 1
