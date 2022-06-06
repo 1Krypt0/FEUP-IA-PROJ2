@@ -19,15 +19,10 @@ class TakeTheLEnv(Env):
     def __init__(self) -> None:
         super(TakeTheLEnv, self).__init__()
 
-        self.board = [
-            [1, 3, 3, 0],
-            [1, 0, 3, 2],
-            [1, 1, 3, 2],
-            [0, 0, 2, 2]
-        ]
+        self.board = [[1, 2, 2, 0], [1, 0, 2, 0], [1, 1, 2, 0], [0, 0, 0, 0]]
         self.size = len(self.board)
         self.state = (self.size - 1, 0)
-        self.action_space = Discrete(len(self.board[0]))
+        self.action_space = Discrete(4)
         self.observation_space = Discrete(self.size**2)
 
     def set_board(self, new_board) -> None:
@@ -81,7 +76,7 @@ class TakeTheLEnv(Env):
         if value not in self.visited_shapes and value != 0:
             return 10
         if value == 0:
-            return -10
+            return -0.25 * len(self.all_shapes)
         else:
             return -1
 
